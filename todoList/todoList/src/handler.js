@@ -82,16 +82,17 @@ export const deleteList = (event) => {
       cancelButtonColor: "#d33",
       confirmButtonText: "Yes, delete it!",
     }).then((result) => {
-      if (result.isConfirmed)
+      if (result.isConfirmed) {
         Swal.fire({
           title: "Deleted!",
           text: "Your file has been deleted.",
           icon: "success",
         });
-      deleteBtnHandler(delList.id);
-      totalList();
-      updateDoneTask();
-      deleteAllBtnHandler();
+        deleteBtnHandler(delList.id);
+        totalList();
+        updateDoneTask();
+        deleteAllBtnHandler();
+      }
     });
 
     // checkScroll();
@@ -103,8 +104,10 @@ export const editBtnHandler = (id) => {
   const editId = listGroup.querySelector(`#${id}`);
   const textPart = editId.querySelector(".textPart");
   const delBtn = editId.querySelector(".deleteBtn");
+  const editBtn = editId.querySelector(".editBtn");
   const newInput = document.createElement("input");
   newInput.classList.add(
+    "w-[120px]",
     "border",
     "border-white",
     "rounded",
@@ -114,18 +117,33 @@ export const editBtnHandler = (id) => {
   );
   const existedText = editId.querySelector("#todoText");
   existedText.classList.toggle("hidden");
+  editBtn.classList.add("hidden");
   newInput.value = existedText.innerText;
-  textPart.prepend(newInput);
+
+  textPart.append(newInput);
   newInput.focus();
-  delBtn.setAttribute("disabled", true);
-  delBtn.classList.add("opacity-50", "size-2");
+  delBtn.classList.add();
 
   newInput.addEventListener("blur", () => {
     newInput.remove();
-    delBtn.removeAttribute("disabled", true);
-    delBtn.classList.remove("opacity-50", "size-2");
-    existedText.innerText = newInput.value;
+    editBtn.classList.remove("hidden");
+    if (newInput.value.trim() === "") {
+      existedText.innerText = existedText.innerText;
+    } else {
+      existedText.innerText = newInput.value;
+    }
+
     existedText.classList.remove("hidden");
+  });
+
+  newInput.addEventListener("keydown", (e) => {
+    if (e.key === "Enter") {
+      e.preventDefault();
+      newInput.remove();
+      editBtn.classList.remove("hidden");
+      existedText.innerText = newInput.value;
+      existedText.classList.remove("hidden");
+    }
   });
 };
 
@@ -153,14 +171,6 @@ export const updateDoneTask = () => {
   doneTotalTask.innerText = doneTask.length;
 };
 
-export const checkScroll = () => {
-  if (listGroup.children.length >= 7) {
-    listGroup.classList.add("overflow-y-auto", "max-h-[400px]");
-  } else {
-    listGroup.classList.remove("overflow-y-auto", "max-h-[400px]");
-  }
-};
-
 export const deleteAllBtnHandler = () => {
   if (listGroup.children.length >= 1) {
     deleteAllBtn.classList.remove("hidden");
@@ -180,17 +190,23 @@ export const deleteAllList = () => {
     cancelButtonColor: "#d33",
     confirmButtonText: "Yes, delete it!",
   }).then((result) => {
-    if (result.isConfirmed)
+    if (result.isConfirmed) {
       Swal.fire({
         title: "Deleted!",
         text: "Your file has been deleted.",
         icon: "success",
       });
-    allList.forEach((list) => {
-      list.remove();
-      deleteAllBtnHandler();
-      updateDoneTask();
-      totalList();
-    });
+      allList.forEach((list) => {
+        list.remove();
+        deleteAllBtnHandler();
+        updateDoneTask();
+        totalList();
+      });
+    }
   });
+};
+
+export const inputEnterKeyHandler = (e) => {
+  if (e.key === "Enter") {
+  }
 };
